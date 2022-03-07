@@ -1,0 +1,152 @@
+import React, { useState, useEffect } from "react";
+import { Row, Col, Card, notification, Button } from "antd";
+import "../personal.css";
+import { EditOutlined } from "@ant-design/icons";
+import DrawerProfile from "../drawerProfile";
+import axios from "axios";
+import _ from "lodash";
+
+const HrProfile = () => {
+  const [visible, setEditVisible] = useState(false);
+  const [userData, setUserData] = useState([]);
+
+  const fetchData = () => {
+    const id = localStorage.getItem("id");
+    axios
+      .get(`http://localhost:8000/users/find-one/${id}`)
+      .then((data) => {
+        setUserData(_.get(data, "data", []));
+      })
+      .catch(() => {
+        notification.error({ message: "something went wrong" });
+      });
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  return (
+    <>
+      <div>
+        <b>
+          <Row>
+            <Col span={24}>
+              <Card>
+                <div>
+                  <br />
+                  <br />
+                  <span className="resume-name">
+                    {_.get(userData, "name", "")
+                      ? _.get(userData, "name", "")
+                      : "Company Name"}
+                  </span>
+                </div>
+                <p style={{ float: "right" }}>
+                  <Button
+                    type="danger"
+                    onClick={() => {
+                      setEditVisible(true);
+                    }}
+                  >
+                    <EditOutlined style={{ color: "green" }} />
+                    Edit Details
+                  </Button>
+                  &nbsp;&nbsp;
+                  {visible && (
+                    <DrawerProfile
+                      visibles={true}
+                      userData={userData}
+                      fetchData={fetchData}
+                      setEditVisible={setEditVisible}
+                    />
+                  )}
+                </p>
+              </Card>
+
+              <br />
+
+              <Row gutter={[16, 16]}>
+                <Col span={12}>
+                  <Card>
+                    <i className="resume-name">About my Company</i>
+                    <br />
+
+                    <br />
+                    <br />
+
+                    <p style={{ textAlign: "justify" }}>
+                      {_.get(userData, "aboutme", "") ? (
+                        <p
+                          dangerouslySetInnerHTML={{
+                            __html: _.get(userData, "aboutme", ""),
+                          }}
+                        />
+                      ) : (
+                        "Company Details"
+                      )}
+                    </p>
+                  </Card>
+                </Col>
+                <Col span={12}>
+                  <Card>
+                    <i className="resume-name"> Technology Used</i>
+                    <br />
+
+                    <br />
+                    <br />
+                    <p className="leftAligh">
+                      {_.get(userData, "skills", "")
+                        ? _.get(userData, "skills", "").replace(/[`~!@#$%^&*()_|+\-=?;:'".<>\{\}\[\]\\\/]/gi,' ')
+                        : "Technology Details "}
+                    </p>
+                  </Card>
+                </Col>
+              </Row>
+
+              <br />
+
+              <Row gutter={[16, 16]}>
+                <Col span={12}>
+                  <Card>
+                    <i className="resume-name"> How to reach me</i>
+                    <br />
+                    <br />
+                    <br />
+
+                    <p>
+                      <p className="leftAligh">
+                        <b>Address</b>&nbsp;&nbsp;
+                        {_.get(userData, "address", "")
+                          ? _.get(userData, "address", "")
+                          : "Company Address"}
+                      </p>
+                      <br />
+                      <br />
+                      <p className="leftAligh">
+                        <b>Phone</b>&nbsp;&nbsp;
+                        {_.get(userData, "phone", "")
+                          ? _.get(userData, "phone", "")
+                          : "Company Contact Details"}
+                      </p>{" "}
+                      <br />
+                      <br />
+                      <p className="leftAligh">
+                        <b>Email</b>&nbsp;&nbsp;
+                        {_.get(userData, "email", "")
+                          ? _.get(userData, "email", "")
+                          : "COmpany Valid Email Address"}
+                      </p>
+                    </p>
+                  </Card>
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+        </b>
+      </div>
+    </>
+  );
+};
+
+export default HrProfile;

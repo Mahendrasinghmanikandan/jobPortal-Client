@@ -1,0 +1,29 @@
+.ant-table-thead > tr > th{
+  background:rgba(255, 8, 179, 0.52) !important;
+  color:white !important;
+    font-size:19px !important;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+.ant-pagination-item-link{
+       background:rgba(255, 8, 179, 0.52) !important;
+  color:white !important;
+}
+.ant-pagination-item-active{
+    border:rgba(255, 8, 179, 0.52) !important;
+    color:white !important;
+}
+
+.ant-table-tbody > tr > td{
+      font-size:17px !important;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+.about-me, p{
+  color:rgb(24, 22, 22) !important;
+  font-size: 17px !important;
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif !important;
+}
+.ant-select:not(.ant-select-customize-input) .ant-select-selector{
+  border-radius: 7px !important;
+}

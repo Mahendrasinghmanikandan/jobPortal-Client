@@ -1,0 +1,37 @@
+.resume{
+    color:rgba(255, 8, 179, 0.52) !important;  
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;  
+}
+b{
+  color:rgba(255, 8, 179, 0.52) !important;
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+p{
+  color:rgba(7, 4, 6, 0.52) !important;
+  font-size: 20px !important;
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+h1{
+    color:rgba(255, 8, 179, 0.52);
+    font-variant: small-caps;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+i{
+    float:left;
+    color:rgba(255, 8, 179, 0.52)  !important;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+
+.leftAligh{
+    float:left;
+}
+
+.resume-name{
+  font-size: 40px !important;
+  color:rgba(255, 8, 179, 0.52)  !important;
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}

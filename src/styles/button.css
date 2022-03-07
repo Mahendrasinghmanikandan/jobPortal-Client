@@ -1,0 +1,19 @@
+.ant-btn-primary{
+  background:rgba(255, 8, 179, 0.52) !important;
+  color:white !important;
+  border:none !important;
+  border-radius: 19px !important;
+}
+
+
+
+.ant-btn-danger{
+  background:#f0f2f5 !important;
+  color:rgba(255, 8, 179, 0.52) !important;
+  border:none !important;
+  border-radius: 19px !important;
+}
+
+.ant-btn{
+  border-radius: 19px !important;
+}

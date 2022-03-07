@@ -1,0 +1,59 @@
+.ant-form-item-explain-error{
+    color:rgba(255, 8, 179, 0.52) !important;
+}
+.ant-input-prefix{
+    color:rgba(255, 8, 179, 0.52) !important;
+}
+.ant-input-password-icon{
+    color:rgba(255, 8, 179, 0.52) !important;
+}
+
+.ant-collapse > .ant-collapse-item > .ant-collapse-header{
+    background:rgba(255, 8, 179, 0.52) !important;
+    color:white !important;
+}
+.ant-input{
+    padding: 10px;
+    border-radius: 19px;
+}
+
+.ant-radio-button-wrapper{
+    color:rgba(255, 8, 179, 0.52)!important;
+}
+.ant-radio-button-wrapper:first-child{
+     border-radius: 75px 0px 0px 20px;
+}
+ /* .ant-form-item-has-error :not(.ant-input-affix-wrapper-disabled):not(.ant-input-affix-wrapper-borderless).ant-input-affix-wrapper{
+     border:rgba(255, 8, 179, 0.52) !important;
+ } */
+
+/* .ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover{
+    border:rgba(255, 8, 179, 0.52) !important;
+} */
+
+input[type='text']{
+    font-size:19px !important;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+input[type='password']{
+    font-size:19px !important;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+textarea.ant-input{
+    font-size:19px !important;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+.ant-select-selector{
+   font-size:19px !important;
+
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;   
+}
+.ant-select-selection-overflow{
+       padding: 10px;
+    border-radius: 19px;
+}
+.filters{
+    margin: 0px 30px 0px 30px;
+}

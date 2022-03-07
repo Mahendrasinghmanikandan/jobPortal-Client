@@ -1,0 +1,124 @@
+@import "antd/dist/antd.css";
+@import "./modal.css";
+@import "./button.css";
+@import "./form.css";
+@import "./resume.css";
+@import "./table.css";
+@import "./notification.css";
+
+.App {
+  text-align: center;  
+}
+
+.ant-pagination-item-active a{
+  color: #1890ff !important;
+}
+.ant-menu-item-icon{
+  color: white !important;
+}
+.ant-menu-title-content,a{
+  color: white !important;
+}
+.logo {
+  height: 32px;
+  margin:36px 0px 46px 0px;
+}
+.site-layout .site-layout-background {
+  background: #fff;
+}
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.ant-descriptions-item-container .ant-descriptions-item-label, .ant-descriptions-item-container .ant-descriptions-item-content{
+  color: white;  
+}
+
+
+/* Layout */
+.site-layout .site-layout-background{
+  /* background: rgba(255, 8, 179, 0.52) !important; */
+}
+.ant-layout-sider{
+  background-color:rgba(255, 8, 179, 0.52);
+}
+.ant-menu.ant-menu-dark, .ant-menu-dark .ant-menu-sub{
+  background: no-repeat;
+}
+.ant-menu.ant-menu-dark .ant-menu-item-selected{
+  background:#a9c5aa !important;
+}
+
+.upload-btn-wrapper {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+}
+
+.btn {
+  border: 2px solid gray;
+  color: gray;
+  background-color: white;
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.upload-btn-wrapper input[type=file] {
+  font-size: 100px;
+  position: absolute;
+  cursor: pointer;
+  left: 0;
+  top: 0;
+  opacity: 0;
+}
+.ant-drawer-content{
+  background: #f0f2f5 !important;
+}
+
+.ant-drawer-header{
+  background: #f0f2f5 !important;
+}
+body{
+  background: #f0f2f5 !important;
+}
+.site-layout .site-layout-background{
+  background: #f0f2f5 !important;
+}
+/* buttons */
+
+/* Switch */
+.ant-switch-checked{
+    background:rgba(255, 8, 179, 0.52) !important;
+}

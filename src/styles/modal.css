@@ -1,0 +1,17 @@
+.ant-modal-content{
+  border-radius:19px;
+  background: #f0f2f5 !important;
+}
+.ant-modal-header{
+  border-radius:19px;
+  background: #f0f2f5 !important;
+}
+
+.ant-drawer-header-title{
+  display: none;
+}
+
+.ant-modal-close-x {
+  display: none !important;
+}
+
