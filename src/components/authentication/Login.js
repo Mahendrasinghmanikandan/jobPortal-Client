@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import axios from "axios";
 import _ from "lodash";
-import './login.css';
+import "./login.css";
 
 const Login = () => {
   const navigation = useNavigate();
@@ -24,31 +24,38 @@ const Login = () => {
       .post(`http://localhost:8000/users/login`, value)
       .then((data) => {
         if (_.get(data, "data", [])) {
-          localStorage.setItem('id', _.get(data, "data.id", ''));
-          localStorage.setItem('name', _.get(data, "data.name", ''));
-          localStorage.setItem('status', _.get(data, "data.status", ''));
-          localStorage.setItem('profile', _.get(data, "data.profilePic", ''));
-          localStorage.setItem('email', _.get(data, "data.email", ''));
-          if (_.get(data, "data.status", '') === 'candidate') {
+          localStorage.setItem("id", _.get(data, "data.id", ""));
+          localStorage.setItem("name", _.get(data, "data.name", ""));
+          localStorage.setItem("status", _.get(data, "data.status", ""));
+          localStorage.setItem("profile", _.get(data, "data.profilePic", ""));
+          localStorage.setItem("email", _.get(data, "data.email", ""));
+          localStorage.setItem("ug", _.get(data, "data.ug", ""));
+          localStorage.setItem("sslc", _.get(data, "data.sslc", ""));
+          localStorage.setItem("hsc", _.get(data, "data.hsc", ""));
+          localStorage.setItem(
+            "resume_marks",
+            _.get(data, "data.resume_marks", "")
+          );
+
+          if (_.get(data, "data.status", "") === "candidate") {
             notification.success({ message: "successfully Logined" });
             navigation("/dashboard");
           } else {
             notification.success({ message: "successfully Logined" });
             navigation("/dashboard");
-          }   
+          }
         } else {
           notification.error({ message: "Invalid Login details" });
         }
       })
       .catch(() => {
         notification.error({ message: "Login failed try again" });
-      });    
-    
+      });
   };
   return (
     <div className="login-modal">
-      <Modal                  
-        centered        
+      <Modal
+        centered
         visible={loginModalVisible}
         onOk={handleOk}
         footer={false}
@@ -97,7 +104,7 @@ const Login = () => {
             />
           </Form.Item>
           <Link to="/signup">
-            <b style={{ float: "right",color:"#1890ff" }}>Register Now</b>
+            <b style={{ float: "right", color: "#1890ff" }}>Register Now</b>
             <br />
             <br />
           </Link>

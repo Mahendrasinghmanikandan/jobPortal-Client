@@ -15,14 +15,24 @@ import {
   Tooltip,
   Tag,
   Drawer,
+  Empty,
+  Popconfirm,
+  Select,
 } from "antd";
 import axios from "axios";
-import { PlusOutlined, EditOutlined } from "@ant-design/icons";
+import {
+  PlusOutlined,
+  EditOutlined,
+  CloudUploadOutlined,
+} from "@ant-design/icons";
 import _ from "lodash";
 import Applications from "./applications";
+import Roles from "../../../helper/roles";
+import { useNavigate } from "react-router-dom";
 const { Header, Content } = Layout;
 
 const { TextArea } = Input;
+const { Option } = Select;
 
 const Createjob = () => {
   const [jobs, setJobs] = useState([]);
@@ -32,12 +42,14 @@ const Createjob = () => {
   const [currentJobId, setCurrentJobId] = useState();
   const [updateId, setUpdateId] = useState();
   const [form] = Form.useForm();
+  const navigation = useNavigate();
   const style = {
     padding: "15px",
     borderRadius: "9px",
   };
   const roleId = localStorage.getItem("id");
   const companyName = localStorage.getItem("name");
+
   const textAreaStyle = {
     height: "200px",
   };
@@ -179,6 +191,16 @@ const Createjob = () => {
       },
     },
   ];
+  const onConfirm = () => {
+    navigation("/dashboard");
+  };
+  const roleChange = (role_name) => {
+    const filterRoles = Roles.filter((result) => {
+      return result.role_name === role_name;
+    });
+    form.setFieldsValue({ skills: _.get(filterRoles, "[0].skills", "") });
+    form.setFieldsValue({ description: _.get(filterRoles, "[0].details", "") });
+  };
   return (
     <div>
       <Layout className="site-layout" style={{ marginLeft: 200 }}>
@@ -190,37 +212,53 @@ const Createjob = () => {
             className="site-layout-background"
             style={{ padding: 24, textAlign: "center" }}
           >
-            <Col span={24}>
-              <Tooltip
-                placement="topLeft"
-                visible={companyName ? false : true}
-                title="please complete your profile"
-              >
+            {_.isEmpty(jobs) ? (
+              <div style={{ marginTop: "20%" }}>
+                <Popconfirm
+                  placement="topRight"
+                  title="Please Complete your profile"
+                  onConfirm={onConfirm}
+                  disabled={companyName !== "null" ? true : false}
+                  okText="Complete now"
+                  cancelText={false}
+                >
+                  <Button
+                    onClick={() => {
+                      setModalVisible(companyName !== "null" ? true : false);
+                    }}
+                    type="primary"
+                  >
+                    <CloudUploadOutlined />
+                    Upload Jobs
+                  </Button>
+                </Popconfirm>
+              </div>
+            ) : (
+              <Col span={24}>
                 <Button
-                  disabled={companyName ? false : true}
                   type="primary"
                   style={{ float: "right" }}
                   onClick={() => {
                     setModalVisible(true);
                   }}
                 >
-                  <PlusOutlined /> Add job
+                  <PlusOutlined /> Upload job
                 </Button>
-              </Tooltip>
-              <br />
-              <br />
-              <Card>
-                <Skeleton loading={loading}>
-                  <Table
-                    loading={loading}
-                    pagination={{ position: ["topRight "] }}
-                    layout="fixed"
-                    columns={jobColumns}
-                    dataSource={jobs}
-                  />
-                </Skeleton>
-              </Card>
-            </Col>
+                <br />
+                <br />
+                <Card>
+                  <Skeleton loading={loading}>
+                    <Table
+                      loading={loading}
+                      pagination={{ position: ["topRight "] }}
+                      layout="fixed"
+                      columns={jobColumns}
+                      dataSource={jobs}
+                    />
+                  </Skeleton>
+                </Card>
+              </Col>
+            )}
           </div>
           <Modal visible={modalVisible} footer={false}>
             <Row>
@@ -240,21 +278,20 @@ const Createjob = () => {
                       },
                     ]}
                   >
-                    <Input style={style} placeholder="Enter Role Here" />
-                  </Form.Item>
-                  <Form.Item
-                    name="skills"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please Enter Required Skills",
-                      },
-                    ]}
-                  >
-                    <Input
-                      style={style}
-                      placeholder="Enter Enter Required Skills Here"
-                    />
+                    <Select
+                      size="large"
+                      placeholder="Select Role Here"
+                      onChange={(e) => roleChange(e)}
+                    >
+                      {Roles &&
+                        Roles.map((res) => {
+                          return (
+                            <Option value={res.role_name}>
+                              {res.role_name}
+                            </Option>
+                          );
+                        })}
+                    </Select>
                   </Form.Item>
 
                   <Form.Item
@@ -301,6 +338,20 @@ const Createjob = () => {
                       placeholder="Enter job Details Here"
                     />
                   </Form.Item>
+                  <Form.Item
+                    name="skills"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please  Required Skills",
+                      },
+                    ]}
+                  >
+                    <TextArea
+                      style={textAreaStyle}
+                      placeholder="Enter Required Skills Here"
+                    />
+                  </Form.Item>
                   <Form.Item>
                     <Space>
                       <Button
@@ -309,7 +360,7 @@ const Createjob = () => {
                         htmlType="submit"
                         className="login-form-button"
                       >
-                        Post job
+                        Upload job
                       </Button>
                       <Button
                         type="danger"
@@ -324,10 +375,10 @@ const Createjob = () => {
               </Col>
             </Row>
           </Modal>
-          <Drawer      
-          className="drawer-modal"  
+          <Drawer
+            className="drawer-modal"
             destroyOnClose
-            footer={false}            
+            footer={false}
             height={1000}
             width={1500}
             onClose={() => {

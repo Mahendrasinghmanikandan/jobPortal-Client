@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/iframe-has-title */
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { Row, Col, notification, Button, Modal, Card } from "antd";
 import "./personal.css";
 import { EditOutlined, EyeOutlined } from "@ant-design/icons";
@@ -12,10 +11,10 @@ const Personal = () => {
   const [visible, setEditVisible] = useState(false);
   const [uploadVisible, setuploadVisible] = useState(false);
   const [userData, setUserData] = useState([]);
-
+  const id = localStorage.getItem("id");
+  const checkName = localStorage.getItem("name");  
+  console.log(checkName);
   const fetchData = () => {
-    const id = localStorage.getItem("id");
-
     axios
       .get(`http://localhost:8000/users/find-one/${id}`)
       .then((data) => {
@@ -61,15 +60,17 @@ const Personal = () => {
                   Edit Details
                 </Button>
                 &nbsp;&nbsp;
-                <Button
-                  type="danger"
-                  onClick={() => {
-                    setuploadVisible(true);
-                  }}
-                >
-                  <EyeOutlined style={{ color: "green" }} />
-                  View Resume
-                </Button>
+                {checkName !== null && (
+                  <Button
+                    type="danger"
+                    onClick={() => {
+                      setuploadVisible(true);
+                    }}
+                  >
+                    <EyeOutlined style={{ color: "green" }} />
+                    View Resume
+                  </Button>
+                )}
                 {visible && (
                   <DrawerProfile
                     visibles={true}

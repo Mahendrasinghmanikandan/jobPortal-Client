@@ -155,7 +155,7 @@ const Signup = (properties) => {
               setWho(who === "candidate" ? "hr" : "candidate");
             }}
           />{" "}
-          &nbsp; {who}
+          &nbsp; <b>{who === "candidate" ? "Here to get the job." : "Here to recruit people."} </b>
           <Link to="/">
             <b style={{ float: "right" ,color:"#1890ff" }}>Login Now</b>
             <br />

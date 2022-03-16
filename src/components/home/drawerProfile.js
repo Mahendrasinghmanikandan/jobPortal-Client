@@ -21,12 +21,13 @@ import _ from "lodash";
 const DrawerProfile = (properties) => {
   const status = localStorage.getItem("status");
   const { visibles, setEditVisible, userData, fetchData } = properties;
+
   const [visible, setVisible] = useState(visibles);
   const editor = useRef(null);
   const [form] = Form.useForm();
   const [content, setContent] = useState("");
   const [profilePath, setProfilePath] = useState("");
-  const [filePath, setPath] = useState("");
+  const [filePath, setPath] = useState([]);
   const [size, setSize] = useState(400);
   const { Panel } = Collapse;
   const { TextArea } = Input;
@@ -40,6 +41,7 @@ const DrawerProfile = (properties) => {
   };
 
   useEffect(() => {
+    
     form.setFieldsValue(userData);
     setProfilePath(_.get(userData, "profilePic", ""));
     setPath(_.get(userData, "resume", ""));
@@ -47,14 +49,16 @@ const DrawerProfile = (properties) => {
   }, []);
 
   const onFinish = (value) => {
-console.log(value,'hsc')
+    console.log(value, "hsc");
     localStorage.setItem("name", value.name);
     localStorage.setItem("ug", value.ug);
     localStorage.setItem("sslc", value.sslc);
     localStorage.setItem("hsc", value.hsc);
+    localStorage.setItem("resume_marks", value.resume_marks);
     value.id = localStorage.getItem("id");
     if (filePath) {
-      value.resume = filePath;
+      value.resume = _.get(filePath, 'file_name', '');
+      value.resume_marks = _.get(filePath, 'content_length', '') + _.get(filePath, 'page_count', '');          
     }
     if (profilePath) {
       value.profilePic = profilePath;
@@ -85,8 +89,8 @@ console.log(value,'hsc')
           "http://localhost:8000/users/upload/resume",
           formData
         );
-        console.log(res.data.data.file_name);
-        setPath(_.get(res, "data.data.file_name", ""));
+
+        setPath(_.get(res, "data.data", ""));
         notification.success({ message: "Process Done" });
       } catch (ex) {
         notification.error({ message: "Please Change the file name" });
@@ -158,7 +162,7 @@ console.log(value,'hsc')
           <br></br>
           <br></br>
           <br></br>
-          <Collapse defaultActiveKey={["1","2","3","4","5"]}>
+          <Collapse defaultActiveKey={["1", "2", "3", "4", "5"]}>
             <Panel header="General Details" key="1">
               <p>
                 <Form.Item
@@ -202,7 +206,7 @@ console.log(value,'hsc')
                   <Input placeholder="E-mail" />
                 </Form.Item>
 
-                {status === "candidate" &&
+                {status === "candidate" && (
                   <Form.Item
                     name="resume"
                     rules={[
@@ -224,10 +228,10 @@ console.log(value,'hsc')
                         onChange={uploadResume}
                       />
                       <br />
-                      <i>{filePath}</i>
+                      <i>{_.get(filePath, 'file_name', '') || filePath}</i>
                     </div>
                   </Form.Item>
-                }
+                )}
                 <div class="upload-btn-wrapper">
                   <Button type="danger">
                     <UploadOutlined style={{ cursor: "pointer" }} />
@@ -288,7 +292,7 @@ console.log(value,'hsc')
                 >
                   <TextArea
                     placeholder={
-                     status === "candidate"
+                      status === "candidate"
                         ? "Please Enter  Skills"
                         : "Please Enter  Technology Used"
                     }
@@ -354,14 +358,27 @@ console.log(value,'hsc')
                 </Form.Item>
                 <Form.Item
                   rules={[
-                    // {
-                    //   type: "number",
-                    //   message: "The Enter  valid Contact!",
-                    // },
                     {
                       required: true,
+                      // type:'number',
                       message: "Please Enter your Contact!",
                     },
+                    ({ getFieldValue }) => ({
+                      validator(_, value) {
+                        if (
+                          !value ||
+                          typeof(getFieldValue("phone")) !== "number"
+                        ) {
+                          console.log(typeof(value))
+                          return Promise.resolve();
+                        }
+
+                        console.log('enter 2')
+                        return Promise.reject(
+                          new Error("Please Enter Valid Contact Number!")
+                        );
+                      },
+                    }),
                   ]}
                   name="phone"
                 >
