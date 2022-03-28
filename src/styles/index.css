@@ -5,14 +5,40 @@
 @import "./resume.css";
 @import "./table.css";
 @import "./notification.css";
+@import "./Skeleton.css";
 
 .App {
   text-align: center;  
 }
-
-.ant-pagination-item-active a{
-  color: #1890ff !important;
+.site-layout-content {
+  min-height: 280px;
+  padding: 24px;
+  background: #fff;
 }
+.ant-modal-mask{
+  background-image:linear-gradient( rgba(240, 236, 233, 0.8) 0%, rgba(240, 238, 238, 0.8) 100%), url('../../public/bg-masthead.jpg') !important;
+  background-size: cover;
+  background-position: 50% 100%;
+  background-size: cover;
+  height: 100vh;
+}
+.site-layout .site-layout-background{
+  height: 180vh;
+  background:linear-gradient( rgba(240, 236, 233, 0.8) 0%, rgba(240, 238, 238, 0.8) 100%), url('../../public/bg-masthead.jpg') !important;
+
+}
+#components-layout-demo-top .logo {
+  float: left;
+  width: 120px;
+  height: 31px;
+  margin: 16px 24px 16px 0;
+  background: rgba(255, 255, 255, 0.3);
+}
+.ant-row-rtl #components-layout-demo-top .logo {
+  float: right;
+  margin: 16px 0 16px 24px;
+}
+
 .ant-menu-item-icon{
   color: white !important;
 }
@@ -23,9 +49,7 @@
   height: 32px;
   margin:36px 0px 46px 0px;
 }
-.site-layout .site-layout-background {
-  background: #fff;
-}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -65,10 +89,7 @@
 }
 
 
-/* Layout */
-.site-layout .site-layout-background{
-  /* background: rgba(255, 8, 179, 0.52) !important; */
-}
+
 .ant-layout-sider{
   background-color:rgba(255, 8, 179, 0.52);
 }
@@ -113,12 +134,23 @@
 body{
   background: #f0f2f5 !important;
 }
-.site-layout .site-layout-background{
-  background: #f0f2f5 !important;
-}
+
 /* buttons */
 
 /* Switch */
 .ant-switch-checked{
     background:rgba(255, 8, 179, 0.52) !important;
+}
+
+.table-td{
+  font-family: 'Times New Roman', Times, serif;
+  color:#282c34;
+}
+
+.color-green{
+  color:rgb(219, 84, 84) !important;
+}
+
+.color-pink{
+  color:rgb(21, 169, 206) !important;
 }

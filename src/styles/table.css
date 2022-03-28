@@ -5,18 +5,24 @@
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
 }
 
+.ant-pagination-item{
+  background-color:rgba(255, 8, 179, 0.52) !important;
+  border: none !important;
+}
+
+.ant-pagination-item-active a{
+color:black !important;
+}
 .ant-pagination-item-link{
        background:rgba(255, 8, 179, 0.52) !important;
   color:white !important;
 }
-.ant-pagination-item-active{
-    border:rgba(255, 8, 179, 0.52) !important;
-    color:white !important;
-}
+
 
 .ant-table-tbody > tr > td{
       font-size:17px !important;
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    text-align: justify;
 }
 
 .about-me, p{

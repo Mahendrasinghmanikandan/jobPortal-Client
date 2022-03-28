@@ -26,7 +26,7 @@ const Home = () => {
     const id = localStorage.getItem("id");
 
     axios
-      .get(`http://localhost:8000/users/find-one/${id}`)
+      .get(`http://localhost:8000/users/find-one/${id}/new`)
       .then((data) => {
         setUserData(_.get(data, "data", []));
       })

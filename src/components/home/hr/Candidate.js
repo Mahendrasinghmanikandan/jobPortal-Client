@@ -13,7 +13,6 @@ const Candidate = () => {
     axios
       .get(`http://localhost:8000/users/get-candidate/${status}`)
       .then((data) => {
-        console.log(_.get(data, "data", []));
         setCandidate(_.get(data, "data", []));
       })
       .catch(() => {
@@ -37,7 +36,7 @@ const Candidate = () => {
                 candidate.map((res) => {
                   return (
                     <Col span={5}>
-                      <Card                        
+                      <Card
                         hoverable
                         style={{ width: 240, marginBottom: "20px" }}
                         cover={
@@ -47,13 +46,15 @@ const Candidate = () => {
                             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSSQ2Af_rrXmQCjMtH8v_EMB6MyZdpx4IZZ-w&usqp=CAU"
                           />
                         }
-                      >                        
+                      >
                         <Meta
                           title={_.get(res, "name", "")}
-                          description={_.get(res, "role", "")}                          
+                          description={_.get(res, "role", "")}
                         />
-                        <br/>
-                      <Button style={{borderRadius:'9px'}}>View More</Button>
+                        <br />
+                        <Button style={{ borderRadius: "9px" }}>
+                          View More
+                        </Button>
                       </Card>
                     </Col>
                   );

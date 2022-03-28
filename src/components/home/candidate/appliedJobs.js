@@ -2,25 +2,16 @@ import React, { useState, useEffect } from "react";
 import {
   notification,
   Layout,
-  Button,
-  Row,
   Col,
-  Form,
-  Input,
-  Card,
   Table,
-  Modal,
-  Space,
   Skeleton,
   Result,
   Tag,
 } from "antd";
 import axios from "axios";
-import { PlusOutlined, EditOutlined } from "@ant-design/icons";
-import _ from "lodash";
-const { Header, Content } = Layout;
 
-const { TextArea } = Input;
+import _ from "lodash";
+const { Content } = Layout;
 
 const Appliedjobs = () => {
   const [jobs, setJobs] = useState([]);
@@ -46,36 +37,75 @@ const Appliedjobs = () => {
 
   const jobColumns = [
     {
-      title: "Roles",
-      dataIndex: "role",
-      key: "role",
-    },
-    {
-      title: "Skills Required",
-      dataIndex: "skills",
-      key: "skills",
-    },
-    {
-      title: "Experience Required",
-      dataIndex: "experience",
-      key: "experience",
-    },
-    {
-      title: "Salary Details",
-      dataIndex: "salary",
-      key: "salary",
+      title: "Job id",
+      dataIndex: "id",
+      key: "id",
+      render: (data) => {
+        return <span>{data}</span>;
+      },
     },
     {
       title: "Job Details",
       dataIndex: "description",
       key: "description",
+      render: (data) => {
+        return <span>{data}</span>;
+      },
     },
+    {
+      title: "Skills Required",
+      key: "skills",
+      render: (data) => {
+        return (
+          <i>
+            {_.get(data, "Skills", []).map((res) => (
+              <>
+                <Tag color="cyan">{res.value}</Tag>
+                <br />
+              </>
+            ))}
+          </i>
+        );
+      },
+    },
+    {
+      title: "Roles",
+      dataIndex: "role",
+      key: "role",
+      render: (data) => {
+        return <pre className="table-td">{data}</pre>;
+      },
+    },
+
+    {
+      title: "Experience Required",
+      key: "experience",
+      render: (data) => {
+        return (
+          <pre className="table-td">
+            ₹{_.get(data, "salaryFrom", "")} to ₹{_.get(data, "salaryTo", "")}
+          </pre>
+        );
+      },
+    },
+    {
+      title: "Salary Details",
+      key: "salary",
+      render: (data) => {
+        return (
+          <pre className="table-td">
+            {_.get(data, "expFrom", "")} to {_.get(data, "expTo", "")}
+          </pre>
+        );
+      },
+    },
+
     {
       title: "Company Name",
       dataIndex: "users",
       key: "company_name",
       render: (data) => {
-        return <span>{_.get(data, "[0].name", "")}</span>;
+        return <pre className="table-td">{_.get(data, "[0].name", "")}</pre>;
       },
     },
     {
@@ -84,17 +114,26 @@ const Appliedjobs = () => {
       key: "company_name",
       render: (data, items) => {
         return (
-          <Space>
+          <>
             {_.get(data, "[0].status", "") ? (
-              <Tag color={_.get(data, "[0].status", "") === "Selected" ? "green" : "red" }>
-                {_.get(data, "[0].status", "")}
-              </Tag>              
+              <Tag
+                size="small"
+                color={
+                  _.get(data, "[0].status", "") === "Selected" ? "green" : "red"
+                }
+              >
+                {_.get(data, "[0].status", "") === "Selected"
+                  ? "Short Listed"
+                  : "Rejected"}
+              </Tag>
             ) : (
               <>
-               <Tag color="rgba(255, 8, 179, 0.52)">in progress</Tag>
+                <Tag size="small" color="rgba(255, 8, 179, 0.52)">
+                  in progress
+                </Tag>
               </>
             )}
-          </Space>
+          </>
         );
       },
     },
@@ -102,32 +141,30 @@ const Appliedjobs = () => {
   return (
     <div>
       <Layout className="site-layout" style={{ marginLeft: 200 }}>
-        
-        <Content style={{ margin: "24px 16px 0", overflow: "initial" }}>
+        <Content>
           <div
             className="site-layout-background"
             style={{ padding: 24, textAlign: "center" }}
           >
             <Col span={24}>
-<Card>
-                <Skeleton loading={loading}>
-                  {!_.isEmpty(jobs) ? (
-                    <Table
-                      loading={loading}
-                      pagination={{ position: ["topRight "] }}
-                      layout="fixed"
-                      columns={jobColumns}
-                      dataSource={jobs}
-                    />
-                  ) : (
-                    <Result                    
-                      status="404"
-                      title="No Data"
-                      subTitle="Sorry, you didn't applied any jobs"
-                    />
-                  )}
-                </Skeleton>
-</Card>
+              <Skeleton loading={loading}>
+                {!_.isEmpty(jobs) ? (
+                  <Table
+                    loading={loading}
+                    pagination={{ position: ["topRight "] }}
+                    layout="fixed"
+                    columns={jobColumns}
+                    dataSource={jobs}
+                    scroll={{ x: 300 }}
+                  />
+                ) : (
+                  <Result
+                    status="404"
+                    title="No Data"
+                    subTitle="Sorry, you didn't applied any jobs"
+                  />
+                )}
+              </Skeleton>
             </Col>
           </div>
         </Content>

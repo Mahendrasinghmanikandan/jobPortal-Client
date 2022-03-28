@@ -35,3 +35,8 @@ i{
   color:rgba(255, 8, 179, 0.52)  !important;
   font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
 }
+
+.ant-timeline-item-head-blue{
+  color:rgba(255, 8, 179, 0.52)  !important;
+  border-color:rgba(255, 8, 179, 0.52)  !important;
+}

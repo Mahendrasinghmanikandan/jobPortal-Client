@@ -9,6 +9,7 @@ import "./login.css";
 const Login = () => {
   const navigation = useNavigate();
   const [loginModalVisible, setLoginModalVisible] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const style = {
     padding: "15px",
@@ -20,10 +21,12 @@ const Login = () => {
   };
 
   const onFinish = (value) => {
+    setLoading(true);
     axios
       .post(`http://localhost:8000/users/login`, value)
       .then((data) => {
         if (_.get(data, "data", [])) {
+          setLoading(false);
           localStorage.setItem("id", _.get(data, "data.id", ""));
           localStorage.setItem("name", _.get(data, "data.name", ""));
           localStorage.setItem("status", _.get(data, "data.status", ""));
@@ -32,6 +35,10 @@ const Login = () => {
           localStorage.setItem("ug", _.get(data, "data.ug", ""));
           localStorage.setItem("sslc", _.get(data, "data.sslc", ""));
           localStorage.setItem("hsc", _.get(data, "data.hsc", ""));
+          localStorage.setItem(
+            "resume_marks",
+            _.get(data, "data.resume_marks", "")
+          );
           localStorage.setItem(
             "resume_marks",
             _.get(data, "data.resume_marks", "")
@@ -45,10 +52,12 @@ const Login = () => {
             navigation("/dashboard");
           }
         } else {
+          setLoading(false);
           notification.error({ message: "Invalid Login details" });
         }
       })
       .catch(() => {
+        setLoading(false);
         notification.error({ message: "Login failed try again" });
       });
   };
@@ -72,11 +81,11 @@ const Login = () => {
             rules={[
               {
                 type: "email",
-                message: "The input is not valid E-mail!",
+                message: "Please Enter valid E-mail!",
               },
               {
                 required: true,
-                message: "Please input your E-mail!",
+                message: "Please Enter your E-mail!",
               },
             ]}
           >
@@ -91,7 +100,7 @@ const Login = () => {
             rules={[
               {
                 required: true,
-                message: "Please input your Password!",
+                message: "Please Enter your Password!",
               },
             ]}
           >
@@ -115,15 +124,11 @@ const Login = () => {
               htmlType="submit"
               className="login-form-button"
               size="large"
+              loading={loading}
             >
               Log in
             </Button>
-          </Form.Item>
-          {/* <Form.Item>
-            <b className="login-form-forgot" href="">
-              Forgot password
-            </b>
-          </Form.Item> */}
+          </Form.Item>         
         </Form>
       </Modal>
     </div>

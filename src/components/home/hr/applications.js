@@ -15,7 +15,7 @@ import {
   Tooltip,
   Tag,
   Select,
-  Dropdown,
+  Image,
 } from "antd";
 import axios from "axios";
 import { EyeOutlined, EditOutlined } from "@ant-design/icons";
@@ -58,28 +58,81 @@ const Applications = (properties) => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hsc, sslc, ug, resumeMark]);
-  const onChangesStatus = (id,data)=>{
-  const formData = {
+  const onChangesStatus = (id, data) => {
+    setLoading(true);
+    const email = localStorage.getItem("email");
+    const name = localStorage.getItem("name");
+    const formData = {
       status: data,
       id: id,
-    };    
+      recever_email: _.get(jobs, "[0].user.email", ""),
+      sender_email: email,
+      job_id: _.get(jobs, "[0].Jobid", ""),
+      textColor: data === "Selected" ? "green" : "red",
+      heading:
+        data === "Selected"
+          ? `${name} Team Hr Liked Your Profile`
+          : `${name} Team Hr replied to Your  Application`,
+      content:
+        data === "Selected"
+          ? `Hi ${_.get(
+              jobs,
+              "[0].user.name",
+              ""
+            )} we ShortListed Your Profile For The Next Round our HR Will Contact you soon.. `
+          : `Hi ${_.get(
+              jobs,
+              "[0].user.name",
+              ""
+            )} First Thankyou For Applying this job.. We Think For Now Your Profile is Not Matched to our Requirements, but Keep touch with us.. we will post more jobs like this soon..,`,
+    };
+
     axios
       .put("http://localhost:8000/application/update", formData)
       .then(() => {
-        notification.success({ message: "The Status Sended Successfully" });        
+        notification.success({ message: "The Status Sended Successfully" });
         fetchData();
+        setLoading(true);
       })
       .catch(() => {
         notification.error({ message: "something went wrong" });
         fetchData();
+        setLoading(false);
       });
-}
+  };
   const handleViewResume = (data) => {
     setResmueData(data);
     setuploadVisible(true);
   };
 
   const jobColumns = [
+    {
+      title: "Candidate Id",
+      dataIndex: "user",
+      key: "id",
+      render: (data) => {
+        return <span>{_.get(data, "id", "")}</span>;
+      },
+    },
+    {
+      title: "Profile",
+      dataIndex: "user",
+      key: "Profile",
+      render: (data) => {
+        return (
+          <span>
+            <Image
+              style={{ borderRadius: "9px" }}
+              src={
+                _.get(data, "profilePic", "") &&
+                "uploads/" + _.get(data, "profilePic", "")
+              }
+              width={75}
+            />
+          </span>
+        );
+      },
+    },
     {
       title: "Name",
       dataIndex: "user",
@@ -88,14 +141,7 @@ const Applications = (properties) => {
         return <span>{data.name}</span>;
       },
     },
-    {
-      title: "skills",
-      dataIndex: "user",
-      key: "skills",
-      render: (data) => {
-        return <span>{data.skills}</span>;
-      },
-    },
+
     {
       title: "Email",
       dataIndex: "user",
@@ -177,22 +223,42 @@ const Applications = (properties) => {
         );
       },
     },
+
     {
       title: "Status",
       dataIndex: "status",
       key: "status",
-      render: (data,items) => {
+      render: (data, items) => {
         return (
           <Space>
             {_.get(items, "status", "") ? (
-              <Tag color={_.get(items, "status", "") === "Selected" ? "green" : "red" }>
-{_.get(items, "status", "")}
+              <Tag
+                color={
+                  _.get(items, "status", "") === "Selected" ? "green" : "red"
+                }
+              >
+                {_.get(items, "status", "") === "Selected"
+                  ? "Short Listed"
+                  : "Rejected"}
               </Tag>
-              
             ) : (
               <>
-                <Button onClick={()=>{onChangesStatus(_.get(items, "id", ""),"Selected")}} style={{ color: "green" }}>Select</Button>
-                <Button onClick={()=>{onChangesStatus(_.get(items, "id", ""),"Rejected")}} style={{ color: "red" }}>Reject</Button>
+                <Button
+                  onClick={() => {
+                    onChangesStatus(_.get(items, "id", ""), "Selected");
+                  }}
+                  style={{ color: "green" }}
+                >
+                  Short List
+                </Button>
+                <Button
+                  onClick={() => {
+                    onChangesStatus(_.get(items, "id", ""), "Rejected");
+                  }}
+                  style={{ color: "red" }}
+                >
+                  Reject
+                </Button>
               </>
             )}
           </Space>
@@ -200,7 +266,7 @@ const Applications = (properties) => {
       },
     },
     {
-      title: "About Me",
+      title: "About Candidate",
       dataIndex: "user",
       key: "about_me",
 
@@ -228,7 +294,7 @@ const Applications = (properties) => {
       },
     },
   ];
-  console.log(readMoreData, "readMoreData");
+
   const handleReadMore = (data) => {
     if (data) {
       setReadMore(!readMore);
@@ -238,15 +304,7 @@ const Applications = (properties) => {
       setReadMoreData([]);
     }
   };
-  const rowSelection = {
-    onChange: (selectedRowKeys, selectedRows) => {
-      console.log(
-        `selectedRowKeys: ${selectedRowKeys}`,
-        "selectedRows: ",
-        selectedRows
-      );
-    },
-  };
+
   return (
     <div>
       <div>
@@ -267,7 +325,7 @@ const Applications = (properties) => {
               clear filter
             </Option>
           </Select>
-          </Space>
+        </Space>
         {/* <Space>
           <b className="filters">HSC</b>
           <Select
@@ -332,12 +390,12 @@ const Applications = (properties) => {
       <Card>
         <Skeleton loading={loading}>
           <Table
+            bordered
             rowKey={(key) => key.user_id}
             pagination={{ position: ["topRight "] }}
             scroll={{ x: 300 }}
             columns={jobColumns}
             dataSource={jobs}
-            rowSelection={rowSelection}
           />
         </Skeleton>
       </Card>
@@ -366,6 +424,10 @@ const Applications = (properties) => {
                 ),
             }}
           />
+          <h1>Skills</h1>
+          {_.get(readMoreData, "Skills", []).map((res) => (
+            <Tag color="green">{res.value}&nbsp;</Tag>
+          ))}
         </span>
       </Modal>
       <Modal

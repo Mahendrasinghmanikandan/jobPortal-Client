@@ -10,15 +10,12 @@ const Home = () => {
   return (
     <div>
       <Layout className="site-layout" style={{ marginLeft: 200 }}>
-        <Header className="site-layout-background" style={{ padding: 0 }}>
-          {/* search */}
-        </Header>
-        <Content style={{ margin: "24px 16px 0", overflow: "initial" }}>
+        <Content>
           <div
             className="site-layout-background"
             style={{ padding: 24, textAlign: "center" }}
           >
-            {status==="candidate"? <Personal/> : <HrProfile/>}            
+            {status === "candidate" ? <Personal /> : <HrProfile />}
           </div>
         </Content>
       </Layout>

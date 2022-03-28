@@ -13,7 +13,6 @@ const Company = () => {
     axios
       .get(`http://localhost:8000/users/get-candidate/${status}`)
       .then((data) => {
-        console.log(_.get(data, "data", []));
         setCandidate(_.get(data, "data", []));
       })
       .catch(() => {

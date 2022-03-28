@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Row, Col, Card, notification, Button } from "antd";
+import { Row, Col, Card, notification, Button, Table, Skeleton } from "antd";
 import "../personal.css";
 import { EditOutlined } from "@ant-design/icons";
 import DrawerProfile from "../drawerProfile";
@@ -9,13 +9,21 @@ import _ from "lodash";
 const HrProfile = () => {
   const [visible, setEditVisible] = useState(false);
   const [userData, setUserData] = useState([]);
-
+  const [filterSkills, setFilterSkills] = useState([]);
+  const [loading, setLoading] = useState(false);
   const fetchData = () => {
+    setLoading(true);
     const id = localStorage.getItem("id");
     axios
-      .get(`http://localhost:8000/users/find-one/${id}`)
+      .get(
+        `http://localhost:8000/users/find-one/${id}/${
+          localStorage.getItem("name") === "null" ? "new" : "notnew"
+        }`
+      )
       .then((data) => {
         setUserData(_.get(data, "data", []));
+        setFilterSkills(_.get(data, "data.Skills", []));
+        setLoading(false);
       })
       .catch(() => {
         notification.error({ message: "something went wrong" });
@@ -25,14 +33,22 @@ const HrProfile = () => {
   useEffect(() => {
     fetchData();
   }, []);
-
+  const columns = [
+    {
+      dataIndex: "value",
+      key: "value",
+      render: (data) => {
+        return <span>{data}</span>;
+      },
+    },
+  ];
   return (
-    <>
-      <div>
-        <b>
-          <Row>
-            <Col span={24}>
-              <Card>
+    <div>
+      <b>
+        <Row>
+          <Col span={24}>
+            <Card>
+              <Skeleton active loading={loading}>
                 <div>
                   <br />
                   <br />
@@ -62,13 +78,15 @@ const HrProfile = () => {
                     />
                   )}
                 </p>
-              </Card>
+              </Skeleton>
+            </Card>
 
-              <br />
+            <br />
 
-              <Row gutter={[16, 16]}>
-                <Col span={12}>
-                  <Card>
+            <Row>
+              <Col span={24}>
+                <Card>
+                  <Skeleton active loading={loading}>
                     <i className="resume-name">About my Company</i>
                     <br />
 
@@ -86,29 +104,39 @@ const HrProfile = () => {
                         "Company Details"
                       )}
                     </p>
-                  </Card>
-                </Col>
-                <Col span={12}>
-                  <Card>
+                  </Skeleton>
+                </Card>
+              </Col>
+            </Row>
+
+            <br />
+
+            <Row gutter={[16, 16]}>
+              <Col span={12}>
+                <Card>
+                  <Skeleton active loading={loading}>
                     <i className="resume-name"> Technology Used</i>
                     <br />
 
                     <br />
                     <br />
                     <p className="leftAligh">
-                      {_.get(userData, "skills", "")
-                        ? _.get(userData, "skills", "").replace(/[`~!@#$%^&*()_|+\-=?;:'".<>\{\}\[\]\\\/]/gi,' ')
-                        : "Technology Details "}
+                      {!_.isEmpty(_.get(userData, "Skills", [])) ? (
+                        <Table
+                          columns={columns}
+                          showHeader={false}
+                          dataSource={filterSkills}
+                        ></Table>
+                      ) : (
+                        "Technology Details"
+                      )}
                     </p>
-                  </Card>
-                </Col>
-              </Row>
-
-              <br />
-
-              <Row gutter={[16, 16]}>
-                <Col span={12}>
-                  <Card>
+                  </Skeleton>
+                </Card>
+              </Col>
+              <Col span={12}>
+                <Card>
+                  <Skeleton active loading={loading}>
                     <i className="resume-name"> How to reach me</i>
                     <br />
                     <br />
@@ -138,14 +166,14 @@ const HrProfile = () => {
                           : "COmpany Valid Email Address"}
                       </p>
                     </p>
-                  </Card>
-                </Col>
-              </Row>
-            </Col>
-          </Row>
-        </b>
-      </div>
-    </>
+                  </Skeleton>
+                </Card>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+      </b>
+    </div>
   );
 };
 

@@ -18,6 +18,7 @@ import {
   Empty,
   Popconfirm,
   Select,
+  InputNumber,
 } from "antd";
 import axios from "axios";
 import {
@@ -28,7 +29,10 @@ import {
 import _ from "lodash";
 import Applications from "./applications";
 import Roles from "../../../helper/roles";
+import experienceFrom from "../../../helper/experienceFrom";
+import jobLocation from "../../../helper/jobLocation";
 import { useNavigate } from "react-router-dom";
+const commaNumber = require("comma-number");
 const { Header, Content } = Layout;
 
 const { TextArea } = Input;
@@ -36,17 +40,19 @@ const { Option } = Select;
 
 const Createjob = () => {
   const [jobs, setJobs] = useState([]);
+  const [rolesFilteredData, setRolesFilteredData] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [currentDrawer, setCurrentDrawer] = useState(false);
   const [currentJobId, setCurrentJobId] = useState();
   const [updateId, setUpdateId] = useState();
+  const [experience, setExperience] = useState([]);
+  const [filterRoless, setFilterRoless] = useState([]);
+  const [updateActivity, setUpdateActivity] = useState(false);
+
   const [form] = Form.useForm();
   const navigation = useNavigate();
-  const style = {
-    padding: "15px",
-    borderRadius: "9px",
-  };
+
   const roleId = localStorage.getItem("id");
   const companyName = localStorage.getItem("name");
 
@@ -56,17 +62,35 @@ const Createjob = () => {
 
   const handleCancel = () => {
     form.resetFields();
+    setUpdateId();
+    form.resetFields();
+    setFilterRoless();
     setModalVisible(false);
+    setUpdateActivity(false);
   };
 
   const handleUpdate = (id) => {
     setUpdateId(id);
+    setUpdateActivity(true);
     const updateJob =
       jobs &&
       jobs.filter((res) => {
         return res.id === id;
       });
+
     form.setFieldsValue(_.get(updateJob, "[0]", {}));
+
+    form.setFieldsValue({
+      skill: _.get(updateJob, "[0].Skills", []).map((result) => {
+        return result.value;
+      }),
+    });
+    const filterRoles = Roles.filter((result) => {
+      return result.role_name === _.get(updateJob, "[0].role", "");
+    });
+
+    setFilterRoless(filterRoles);
+
     setModalVisible(true);
   };
 
@@ -84,10 +108,15 @@ const Createjob = () => {
       });
   };
   useEffect(() => {
+    setRolesFilteredData(
+      Roles && Roles.filter((res) => res.role_name !== "for hr")
+    );
+
     fetchData();
   }, []);
 
   const onFinish = (value) => {
+    setLoading(true);
     value.userId = roleId;
     value.company_name = companyName;
     if (updateId) {
@@ -96,12 +125,14 @@ const Createjob = () => {
         .post("http://localhost:8000/jobs/update", value)
         .then(() => {
           notification.success({ message: "Jobs Successfully Updated" });
+          setLoading(false);
           form.resetFields();
           handleCancel();
           fetchData();
         })
         .catch(() => {
           notification.error({ message: "Job Updation failed" });
+          setLoading(false);
           form.resetFields();
           handleCancel();
           fetchData();
@@ -111,12 +142,14 @@ const Createjob = () => {
         .post("http://localhost:8000/jobs/create", value)
         .then(() => {
           notification.success({ message: "Jobs Successfully Created" });
+          setLoading(false);
           form.resetFields();
           handleCancel();
           fetchData();
         })
         .catch(() => {
           notification.error({ message: "Job Creation failed" });
+          setLoading(false);
           form.resetFields();
           handleCancel();
           fetchData();
@@ -131,43 +164,24 @@ const Createjob = () => {
 
   const jobColumns = [
     {
-      title: "Roles",
-      dataIndex: "role",
-      key: "role",
-    },
-    {
-      title: "Skills Required",
-      dataIndex: "skills",
-      key: "skills",
-    },
-    {
-      title: "Experience Required",
-      dataIndex: "experience",
-      key: "experience",
-    },
-    {
-      title: "Salary Details",
-      dataIndex: "salary",
-      key: "salary",
+      title: "Job Id",
+      dataIndex: "id",
+      key: "id",
+      render: (data) => {
+        return <span>{data}</span>;
+      },
     },
     {
       title: "Job Details",
       dataIndex: "description",
       key: "description",
-    },
-    {
-      title: "Update",
-      key: "Actions",
       render: (data) => {
         return (
-          <>
-            <span>
-              <EditOutlined
-                onClick={() => handleUpdate(data.id)}
-                style={{ color: "green" }}
-              />
-            </span>
-          </>
+          <span>
+            <Tooltip placement="topLeft" title={data}>
+              {data.slice(0, 20)}...
+            </Tooltip>
+          </span>
         );
       },
     },
@@ -190,6 +204,81 @@ const Createjob = () => {
         );
       },
     },
+    {
+      title: "Roles",
+      dataIndex: "role",
+      key: "role",
+      render: (data) => {
+        return <pre className="table-td">{data}</pre>;
+      },
+    },
+
+    {
+      title: "Experience Required",
+      key: "experience",
+      render: (data) => {
+        return (
+          <pre className="table-td">
+            ₹{_.get(data, "salaryFrom", "")} to ₹{_.get(data, "salaryTo", "")}
+          </pre>
+        );
+      },
+    },
+    {
+      title: "Salary Details",
+      key: "salary",
+      render: (data) => {
+        return (
+          <pre className="table-td">
+            {_.get(data, "expFrom", "")} to {_.get(data, "expTo", "")}
+          </pre>
+        );
+      },
+    },
+    {
+      title: "Salary Type",
+      dataIndex: "salaryType",
+      key: "salaryType",
+      render: (data) => {
+        return <pre className="table-td">{data}</pre>;
+      },
+    },
+    {
+      title: "Location",
+      dataIndex: "jobLocation",
+      key: "id",
+      render: (data) => {
+        return <pre className="table-td">{data}</pre>;
+      },
+    },
+    {
+      title: "Skills Required",
+      dataIndex: "Skills",
+      key: "id",
+      render: (data) => {
+        return data.map((res) => (
+          <>
+            <Tag color="green">{res.value}&nbsp;</Tag>
+          </>
+        ));
+      },
+    },
+    {
+      title: "Update",
+      key: "Actions",
+      render: (data) => {
+        return (
+          <>
+            <span>
+              <EditOutlined
+                onClick={() => handleUpdate(data.id)}
+                style={{ color: "green" }}
+              />
+            </span>
+          </>
+        );
+      },
+    },
   ];
   const onConfirm = () => {
     navigation("/dashboard");
@@ -198,16 +287,29 @@ const Createjob = () => {
     const filterRoles = Roles.filter((result) => {
       return result.role_name === role_name;
     });
-    form.setFieldsValue({ skills: _.get(filterRoles, "[0].skills", "") });
+    form.setFieldsValue({ skill: [] });
     form.setFieldsValue({ description: _.get(filterRoles, "[0].details", "") });
+    setFilterRoless(filterRoles);
+  };
+  const experienceChange = (experience) => {
+    const filterExperienceTo = experienceFrom.filter((result) => {
+      return result.value === experience;
+    });
+
+    form.setFieldsValue({
+      expTo: _.get(filterExperienceTo, "[0].experienceto[0].value", ""),
+    });
+    setExperience(filterExperienceTo);
+  };
+
+  const handleCurrencyChange = (e) => {
+    form.setFieldsValue({ salaryTo: parseFloat(e) + 5000 });
+    form.setFieldsValue({ salaryFrom: parseFloat(e) });
   };
   return (
     <div>
       <Layout className="site-layout" style={{ marginLeft: 200 }}>
-        <Header className="site-layout-background" style={{ padding: 0 }}>
-          {/* search */}
-        </Header>
-        <Content style={{ margin: "24px 16px 0", overflow: "initial" }}>
+        <Content>
           <div
             className="site-layout-background"
             style={{ padding: 24, textAlign: "center" }}
@@ -222,15 +324,17 @@ const Createjob = () => {
                   okText="Complete now"
                   cancelText={false}
                 >
-                  <Button
-                    onClick={() => {
-                      setModalVisible(companyName !== "null" ? true : false);
-                    }}
-                    type="primary"
-                  >
-                    <CloudUploadOutlined />
-                    Upload Jobs
-                  </Button>
+                  <Skeleton active loading={loading}>
+                    <Button
+                      onClick={() => {
+                        setModalVisible(companyName !== "null" ? true : false);
+                      }}
+                      type="primary"
+                    >
+                      <CloudUploadOutlined />
+                      Upload Jobs
+                    </Button>
+                  </Skeleton>
                 </Popconfirm>
               </div>
             ) : (
@@ -249,6 +353,8 @@ const Createjob = () => {
                 <Card>
                   <Skeleton loading={loading}>
                     <Table
+                      bordered
+                      scroll={{ x: 500 }}
                       loading={loading}
                       pagination={{ position: ["topRight "] }}
                       layout="fixed"
@@ -260,7 +366,7 @@ const Createjob = () => {
               </Col>
             )}
           </div>
-          <Modal visible={modalVisible} footer={false}>
+          <Modal visible={modalVisible} width="1000px" footer={false}>
             <Row>
               <Col span={24}>
                 <Form
@@ -283,46 +389,135 @@ const Createjob = () => {
                       placeholder="Select Role Here"
                       onChange={(e) => roleChange(e)}
                     >
-                      {Roles &&
-                        Roles.map((res) => {
+                      {rolesFilteredData &&
+                        rolesFilteredData.map((res) => {
                           return (
-                            <Option value={res.role_name}>
+                            <Option key={res.id} value={res.role_name}>
                               {res.role_name}
                             </Option>
                           );
                         })}
                     </Select>
                   </Form.Item>
+                  <Row gutter={[16, 16]}>
+                    <Col span={12}>
+                      <Form.Item
+                        name="expFrom"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please Select Required Experience From",
+                          },
+                        ]}
+                      >
+                        <Select
+                          // defaultValue={"0 years"}
+                          size="large"
+                          placeholder="Experience From"
+                          onChange={(e) => experienceChange(e)}
+                        >
+                          {experienceFrom.map((res) => {
+                            return (
+                              <Option key={res.id} value={res.value}>
+                                {res.value}
+                              </Option>
+                            );
+                          })}
+                        </Select>
+                      </Form.Item>
+                    </Col>
 
-                  <Form.Item
-                    name="experience"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please Enter Required Experience",
-                      },
-                    ]}
-                  >
-                    <Input
-                      style={style}
-                      placeholder="Enter Enter Required Experience Here"
-                    />
-                  </Form.Item>
+                    <Col span={12}>
+                      <Form.Item
+                        name="expTo"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please Select Required Experience To",
+                          },
+                        ]}
+                      >
+                        <Select
+                          // defaultValue={"1 years"}
+                          size="large"
+                          placeholder="Experience To"
+                        >
+                          {_.get(experience, "[0].experienceto", []).map(
+                            (res) => {
+                              return (
+                                <Option key={res.id} value={res.value}>
+                                  {res.value}
+                                </Option>
+                              );
+                            }
+                          )}
+                        </Select>
+                      </Form.Item>
+                    </Col>
+                  </Row>
 
-                  <Form.Item
-                    name="salary"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please Enter  Salary Details",
-                      },
-                    ]}
-                  >
-                    <Input
-                      style={style}
-                      placeholder="Enter Enter  Salary Details Here"
-                    />
-                  </Form.Item>
+                  <Row gutter={[16, 16]}>
+                    <Col span={10}>
+                      <Form.Item
+                        name="salaryFrom"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please Enter Salary From",
+                          },
+                        ]}
+                      >
+                        <InputNumber
+                          // defaultValue={10000}
+                          onChange={(e) => {
+                            handleCurrencyChange(e);
+                          }}
+                          style={{ width: "100%" }}
+                          size="large"
+                          placeholder="Salary From"
+                        />
+                      </Form.Item>
+                    </Col>
+
+                    <Col span={10}>
+                      <Form.Item
+                        name="salaryTo"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please Enter Salary To",
+                          },
+                        ]}
+                      >
+                        <InputNumber
+                          // defaultValue={10000 + 5000}
+                          style={{ width: "100%" }}
+                          size="large"
+                          placeholder="Salary To"
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col span={4}>
+                      <Form.Item
+                        name="salaryType"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please Select Salary Type",
+                          },
+                        ]}
+                      >
+                        <Select
+                          // defaultValue={"Per Year"}
+                          size="large"
+                          placeholder="Salary Type"
+                        >
+                          <Option value="Per Year">Per Year</Option>
+                          <Option value="Per Month">Per Month</Option>
+                        </Select>
+                      </Form.Item>
+                    </Col>
+                  </Row>
 
                   <Form.Item
                     name="description"
@@ -339,18 +534,57 @@ const Createjob = () => {
                     />
                   </Form.Item>
                   <Form.Item
-                    name="skills"
                     rules={[
                       {
                         required: true,
-                        message: "Please  Required Skills",
+                        message: "Please Select Required Skills",
+                      },
+                    ]}
+                    name="skill"
+                  >
+                    <Select size="large" placeholder="Skills" mode="multiple">
+                      {_.get(filterRoless, "[0].skills", []).map((res) => {
+                        return <Option value={res.name}>{res.name}</Option>;
+                      })}
+                    </Select>
+                  </Form.Item>
+                  <Form.Item
+                    name="testType"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please Select Test Type",
                       },
                     ]}
                   >
-                    <TextArea
-                      style={textAreaStyle}
-                      placeholder="Enter Required Skills Here"
-                    />
+                    <Select size="large" placeholder="Test Type">
+                      <Option value="Easy">Easy</Option>
+                      <Option value="Medium">Medium</Option>
+                      <Option value="Hard">Hard</Option>
+                    </Select>
+                  </Form.Item>
+                  <Form.Item
+                    name="jobLocation"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please Select Required Experience From",
+                      },
+                    ]}
+                  >
+                    <Select
+                      // defaultValue={"0 years"}
+                      size="large"
+                      placeholder="Please Select Job Location From"
+                    >
+                      {jobLocation.map((res) => {
+                        return (
+                          <Option key={res.id} value={res.value}>
+                            {res.value}
+                          </Option>
+                        );
+                      })}
+                    </Select>
                   </Form.Item>
                   <Form.Item>
                     <Space>
@@ -359,8 +593,9 @@ const Createjob = () => {
                         size="medium"
                         htmlType="submit"
                         className="login-form-button"
+                        loading={loading}
                       >
-                        Upload job
+                        {updateActivity ? "Update Job" : " Upload job"}
                       </Button>
                       <Button
                         type="danger"

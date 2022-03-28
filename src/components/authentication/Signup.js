@@ -12,7 +12,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import axios from "axios";
 import _ from "lodash";
-import './login.css';
+import "./login.css";
 
 const Signup = (properties) => {
   const [loginModalVisible, setLoginModalVisible] = useState(true);
@@ -20,6 +20,7 @@ const Signup = (properties) => {
   const [emailData, setEmailData] = useState(false);
   const [who, setWho] = useState("candidate");
   const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const handleOk = () => {
     setLoginModalVisible(false);
@@ -40,18 +41,21 @@ const Signup = (properties) => {
   }, []);
 
   const onFinish = (value) => {
-    
+    setLoading(true);
     if (emailData) {
+      setLoading(false);
       notification.error({ message: "Email already used" });
     } else {
       value.status = who;
       axios
         .post("http://localhost:8000/users/create", value)
         .then(() => {
+          setLoading(false);
           notification.success({ message: "successfully registered" });
           navigate("/");
         })
         .catch(() => {
+          setLoading(false);
           notification.error({ message: "registration failed" });
         });
     }
@@ -66,7 +70,7 @@ const Signup = (properties) => {
   };
   return (
     <div className="Signup-modal">
-      <Modal           
+      <Modal
         centered
         visible={loginModalVisible}
         onOk={handleOk}
@@ -86,11 +90,11 @@ const Signup = (properties) => {
             rules={[
               {
                 type: "email",
-                message: "The input is not valid E-mail!",
+                message: "Please Enter valid E-mail!",
               },
               {
                 required: true,
-                message: "Please input your E-mail!",
+                message: "Please Enter your E-mail!",
               },
             ]}
           >
@@ -106,7 +110,7 @@ const Signup = (properties) => {
             rules={[
               {
                 required: true,
-                message: "Please input your Password!",
+                message: "Please Enter your Password!",
               },
             ]}
           >
@@ -148,6 +152,8 @@ const Signup = (properties) => {
               placeholder="Password"
             />
           </Form.Item>
+          <br />
+          <br />
           <Switch
             defaultChecked
             size="small"
@@ -155,9 +161,14 @@ const Signup = (properties) => {
               setWho(who === "candidate" ? "hr" : "candidate");
             }}
           />{" "}
-          &nbsp; <b>{who === "candidate" ? "Here to get the job." : "Here to recruit people."} </b>
+          &nbsp;{" "}
+          <b style={{ color: "#1890ff" }}>
+            {who === "candidate"
+              ? "Here to get the job."
+              : "Here to recruit people."}{" "}
+          </b>
           <Link to="/">
-            <b style={{ float: "right" ,color:"#1890ff" }}>Login Now</b>
+            <b style={{ float: "right", color: "#1890ff" }}>Login Now</b>
             <br />
             <br />
           </Link>
@@ -167,7 +178,8 @@ const Signup = (properties) => {
               type="primary"
               htmlType="submit"
               className="login-form-button"
-              size='large'
+              size="large"
+              loading={loading}
             >
               Signup
             </Button>
